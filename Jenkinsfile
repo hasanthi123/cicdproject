@@ -1,41 +1,43 @@
 pipeline {
     agent any
-
+    
     environment {
-        REGISTRY = "localhost:5005"
-        IMAGE_NAME = "flask-cicd-demo"
-        FULL_IMAGE_NAME = "localhost:5005/flask-cicd-demo"
+        REGISTRY = 'localhost:5005'
+        IMAGE_NAME = 'flask-cicd-demo'
+        REGISTRY_URL = "${REGISTRY}/${IMAGE_NAME}"
     }
-
+    
     stages {
-        stage("Clone Repository") {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/hasanthi123/cicdproject.git'
+                // Checkout the code from the Git repository
+                git 'https://github.com/hasanthi123/cicdproject.git'
             }
         }
 
-        stage("Build Docker Image") {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the image directly with the correct name
-                    sh "docker build -t $FULL_IMAGE_NAME ."
+                    // Build the Docker image
+                    sh 'docker build -t ${REGISTRY_URL}:latest .'
                 }
             }
         }
 
-        stage("Push to Local Registry") {
+        stage('Push to Local Registry') {
             steps {
                 script {
-                    sh "docker push $FULL_IMAGE_NAME"
+                    // Push the Docker image to the local registry
+                    sh 'docker push ${REGISTRY_URL}:latest'
                 }
             }
         }
 
-        stage("Run Container") {
+        stage('Run Docker Container') {
             steps {
                 script {
-                    // Run Flask app on a different port (5005)
-                    sh "docker run -d -p 5005:5000 $FULL_IMAGE_NAME"
+                    // Run the Docker container with the image in the registry
+                    sh 'docker run -d -p 5005:5000 --name flask-cicd-demo ${REGISTRY_URL}:latest'
                 }
             }
         }
@@ -43,7 +45,8 @@ pipeline {
 
     post {
         always {
-            sh "docker ps -a"
+            // Clean up Docker containers after the pipeline is done
+            sh 'docker ps -a'
         }
     }
 }
