@@ -17,15 +17,8 @@ pipeline {
         stage("Build Docker Image") {
             steps {
                 script {
-                    sh "docker build -t $IMAGE_NAME ."
-                }
-            }
-        }
-
-        stage("Tag Image for Local Registry") {
-            steps {
-                script {
-                    sh "docker tag $IMAGE_NAME $FULL_IMAGE_NAME"
+                    // Build the image directly with the correct name
+                    sh "docker build -t $FULL_IMAGE_NAME ."
                 }
             }
         }
@@ -41,7 +34,8 @@ pipeline {
         stage("Run Container") {
             steps {
                 script {
-                    sh "docker run -d -p 5000:5000 $FULL_IMAGE_NAME"
+                    // Run Flask app on a different port (5001)
+                    sh "docker run -d -p 5001:5000 $FULL_IMAGE_NAME"
                 }
             }
         }
@@ -53,4 +47,3 @@ pipeline {
         }
     }
 }
-
