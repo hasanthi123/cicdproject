@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     // Run Flask app on a different port (5001)
-                    sh "docker run -d -p 5001:5000 $FULL_IMAGE_NAME"
+                    sh "docker run -d -p 5002:5000 $FULL_IMAGE_NAME"
                 }
             }
         }
