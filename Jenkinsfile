@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "localhost:5000"
+        REGISTRY = "localhost:5001"
         IMAGE_NAME = "flask-cicd-demo"
-        FULL_IMAGE_NAME = "localhost:5000/flask-cicd-demo"
+        FULL_IMAGE_NAME = "localhost:5001/flask-cicd-demo"
     }
 
     stages {
