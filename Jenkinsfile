@@ -2,13 +2,15 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "your-dockerhub-username/cicd-demo"
+        REGISTRY = "localhost:5000"
+        IMAGE_NAME = "flask-cicd-demo"
+        FULL_IMAGE_NAME = "localhost:5000/flask-cicd-demo"
     }
 
     stages {
         stage("Clone Repository") {
             steps {
-               git url: "https://github.com/hasanthi123/cicdproject.git", branch: "main"
+                git "https://github.com/hasanthi123/cicdproject.git"
             }
         }
 
@@ -20,19 +22,26 @@ pipeline {
             }
         }
 
-        stage("Run Container") {
+        stage("Tag Image for Local Registry") {
             steps {
                 script {
-                    sh "docker run -d -p 5000:5000 $IMAGE_NAME"
+                    sh "docker tag $IMAGE_NAME $FULL_IMAGE_NAME"
                 }
             }
         }
 
-        stage("Push to Docker Hub") {
+        stage("Push to Local Registry") {
             steps {
                 script {
-                    sh "docker login -u your-dockerhub-username -p your-dockerhub-password"
-                    sh "docker push $IMAGE_NAME"
+                    sh "docker push $FULL_IMAGE_NAME"
+                }
+            }
+        }
+
+        stage("Run Container") {
+            steps {
+                script {
+                    sh "docker run -d -p 5000:5000 $FULL_IMAGE_NAME"
                 }
             }
         }
@@ -44,3 +53,4 @@ pipeline {
         }
     }
 }
+
