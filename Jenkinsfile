@@ -31,15 +31,6 @@ pipeline {
             }
         }
 
-       stage("Stop Existing Container") {
-            steps {
-                script {
-                    // Stop the running container if it exists
-                    sh 'docker ps -q --filter "name=flask-cicd-demo" | xargs -r docker stop'
-                }
-            }
-        }
-
         stage("Run Container") {
             steps {
                 script {
