@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "localhost:5001"
+        REGISTRY = "localhost:5005"
         IMAGE_NAME = "flask-cicd-demo"
-        FULL_IMAGE_NAME = "localhost:5001/flask-cicd-demo"
+        FULL_IMAGE_NAME = "localhost:5005/flask-cicd-demo"
     }
 
     stages {
@@ -34,8 +34,8 @@ pipeline {
         stage("Run Container") {
             steps {
                 script {
-                    // Run Flask app on a different port (5001)
-                    sh "docker run -d -p 5001:5000 $FULL_IMAGE_NAME"
+                    // Run Flask app on a different port (5005)
+                    sh "docker run -d -p 5005:5000 $FULL_IMAGE_NAME"
                 }
             }
         }
