@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = 'localhost:5005'  // Local Docker Registry URL
+        REGISTRY = 'localhost:5002'  // Local Docker Registry URL
         IMAGE_NAME = 'flask-cicd-demo'
         REGISTRY_URL = "${REGISTRY}/${IMAGE_NAME}"
     }
@@ -34,7 +34,7 @@ pipeline {
             steps {
                 script {
                     // Run container from the local registry on port 5005
-                    sh 'docker run -d -p 5005:5000 --name flask-cicd-demo ${REGISTRY_URL}:latest'
+                    sh 'docker run -d -p 5002:5000 --name flask-cicd-demo ${REGISTRY_URL}:latest'
                 }
             }
         }
