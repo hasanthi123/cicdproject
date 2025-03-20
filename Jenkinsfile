@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = 'localhost:5005'  // Local Docker Registry URL
-        IMAGE_NAME = 'flask-cicd-demo'
+        REGISTRY = 'docker.io'  // Docker Hub Registry
+        DOCKERHUB_USERNAME = 'your_dockerhub_username'  // Replace with your Docker Hub username
+        IMAGE_NAME = "${DOCKERHUB_USERNAME}/flask-cicd-demo"
         REGISTRY_URL = "${REGISTRY}/${IMAGE_NAME}"
     }
 
@@ -17,15 +18,25 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t ${REGISTRY_URL}:latest .'
+                    sh 'docker build -t ${IMAGE_NAME}:latest .'
                 }
             }
         }
 
-        stage('Push to Local Registry') {
+        stage('Login to Docker Hub') {
             steps {
                 script {
-                    sh 'docker push ${REGISTRY_URL}:latest'
+                    withCredentials([string(credentialsId: 'docker-hub-token', variable: 'DOCKERHUB_PASS')]) {
+                        sh 'echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
+                    }
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    sh 'docker push ${IMAGE_NAME}:latest'
                 }
             }
         }
@@ -33,8 +44,11 @@ pipeline {
         stage('Run Container') {
             steps {
                 script {
-                    // Run container from the local registry on port 5005
-                    sh 'docker run -d -p 5005:5000 --name flask-cicd-demo ${REGISTRY_URL}:latest'
+                    // Stop and remove existing container if running
+                    sh 'docker stop flask-cicd-demo || true && docker rm flask-cicd-demo || true'
+
+                    // Run the new container
+                    sh 'docker run -d -p 5005:5000 --name flask-cicd-demo ${IMAGE_NAME}:latest'
                 }
             }
         }
