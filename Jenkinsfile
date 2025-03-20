@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         REGISTRY = 'docker.io'  // Docker Hub Registry
-        DOCKERHUB_USERNAME = 'your_dockerhub_username'  // Replace with your Docker Hub username
-        IMAGE_NAME = "${DOCKERHUB_USERNAME}/flask-cicd-demo"
+        DOCKERHUB_USERNAME = 'hasanthi123'  // Replace with your Docker Hub username
+        IMAGE_NAME = "${DOCKERHUB_USERNAME}/flask-cicd-demo:v1"
         REGISTRY_URL = "${REGISTRY}/${IMAGE_NAME}"
     }
 
@@ -26,8 +26,8 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'docker-hub-token', variable: 'DOCKERHUB_PASS')]) {
-                        sh 'echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
+                    withCredentials([usernamePassword(credentialsId: 'dckr_pat_p6zp7u8YIe21m2wrOjTSshxjJp0', usernameVariable: 'hasanthi123', passwordVariable: 'H@santhi123')]) {
+                        sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
                     }
                 }
             }
@@ -44,6 +44,9 @@ pipeline {
         stage('Run Container') {
             steps {
                 script {
+                    // List containers before stopping
+                    sh 'docker ps -a'
+
                     // Stop and remove existing container if running
                     sh 'docker stop flask-cicd-demo || true && docker rm flask-cicd-demo || true'
 
@@ -69,3 +72,4 @@ pipeline {
         }
     }
 }
+
