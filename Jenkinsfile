@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = 'docker.io'  
-        DOCKERHUB_USERNAME = 'hasanthi123'  
+        REGISTRY = 'docker.io'  // Docker Hub Registry
+        DOCKERHUB_USERNAME = 'hasanthi123'  // Docker Hub username
         IMAGE_NAME = 'hasanthi123/flask-cicd-demo'
         REGISTRY_URL = "${REGISTRY}/${IMAGE_NAME}"
     }
@@ -18,15 +18,20 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME} ."  // Ensures latest tag
+                    sh 'docker build -t ${IMAGE_NAME} .'
                 }
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'dckr_pat_TXhSJhpRyyGyGAOb_BjUeGO3iNQ', variable: 'H@santhi123')]) {
-                    sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
+                withCredentials([
+                    usernamePassword(credentialsId: 'docker-hub-credentials', 
+                                     usernameVariable: 'DOCKER_USERNAME', 
+                                     passwordVariable: 'DOCKER_PASSWORD'),
+                    string(credentialsId: 'docker-hub-pat', variable: 'DOCKER_PAT')
+                ]) {
+                    sh 'echo "$DOCKER_PAT" | docker login -u "$DOCKER_USERNAME" --password-stdin'
                 }
             }
         }
@@ -34,9 +39,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    sh "docker tag ${IMAGE_NAME} ${IMAGE_NAME}:v1"
-                    sh "docker push ${IMAGE_NAME}:v1"
-
+                    sh 'docker push ${IMAGE_NAME}'
                 }
             }
         }
@@ -44,14 +47,9 @@ pipeline {
         stage('Run Container') {
             steps {
                 script {
-                    // List containers before stopping
                     sh 'docker ps -a'
-
-                    // Stop and remove existing container if running
-                    sh 'docker ps -q --filter "name=flask-cicd-demo" | grep -q . && docker stop flask-cicd-demo && docker rm flask-cicd-demo || true'
-
-                    // Run the new container
-                     sh "docker run -d -p 5006:5000 --name flask-cicd-demo ${IMAGE_NAME}:v1"
+                    sh 'docker stop flask-cicd-demo || true && docker rm flask-cicd-demo || true'
+                    sh 'docker run -d -p 5005:5000 --name flask-cicd-demo ${IMAGE_NAME}'
                 }
             }
         }
@@ -59,7 +57,6 @@ pipeline {
         stage('Post Actions') {
             steps {
                 script {
-                    // List running containers
                     sh 'docker ps -a'
                 }
             }
