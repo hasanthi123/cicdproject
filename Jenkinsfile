@@ -4,7 +4,7 @@ pipeline {
     environment {
         REGISTRY = 'docker.io'  // Docker Hub Registry
         DOCKERHUB_USERNAME = 'hasanthi123'  // Replace with your Docker Hub username
-        IMAGE_NAME = "${DOCKERHUB_USERNAME}/flask-cicd-demo:v1"
+        IMAGE_NAME = 'hasanthi123/flask-cicd-demo'
         REGISTRY_URL = "${REGISTRY}/${IMAGE_NAME}"
     }
 
