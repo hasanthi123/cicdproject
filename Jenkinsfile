@@ -18,7 +18,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME}:latest."  // Ensures latest tag
+                    sh "docker build -t ${IMAGE_NAME} ."  // Ensures latest tag
                 }
             }
         }
@@ -34,7 +34,9 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    sh "docker push ${IMAGE_NAME}:latest"
+                    sh "docker tag ${IMAGE_NAME} ${IMAGE_NAME}:v1"
+                    sh "docker push ${IMAGE_NAME}:v1"
+
                 }
             }
         }
