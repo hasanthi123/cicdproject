@@ -24,14 +24,14 @@ pipeline {
         }
 
         stage('Login to Docker Hub') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'dckr_pat_TXhSJhpRyyGyGAOb_BjUeGO3iNQ', usernameVariable: 'hasanthi123', passwordVariable: 'H@santhi123')]) {
-                        sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
-                    }
-                }
-            }
-        }
+    environment {
+        DOCKER_USERNAME = 'hasanthi123'
+        DOCKER_PASSWORD = 'dckr_pat_TXhSJhpRyyGyGAOb_BjUeGO3iNQ'
+    }
+    steps {
+        sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+    }
+}
 
         stage('Push to Docker Hub') {
             steps {
