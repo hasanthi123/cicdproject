@@ -49,7 +49,7 @@ pipeline {
                 script {
                     sh 'docker ps -a'
                     sh 'docker stop flask-cicd-demo || true && docker rm flask-cicd-demo || true'
-                    sh 'docker run -d -p 5005:5000 --name flask-cicd-demo ${IMAGE_NAME}'
+                    sh 'docker run -d -p 5006:5000 --name flask-cicd-demo ${IMAGE_NAME}'
                 }
             }
         }
