@@ -51,7 +51,7 @@ pipeline {
                     sh 'docker ps -q --filter "name=flask-cicd-demo" | grep -q . && docker stop flask-cicd-demo && docker rm flask-cicd-demo || true'
 
                     // Run the new container
-                    sh "docker run -d -p 5005:5000 --name flask-cicd-demo ${IMAGE_NAME}:latest"
+                     sh "docker run -d -p 5005:5000 --name flask-cicd-demo ${IMAGE_NAME}:v1"
                 }
             }
         }
